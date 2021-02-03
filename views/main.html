@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>myProject</title>
+	<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Alfa Slab One' rel='stylesheet'>
+  <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<style type="text/css">
+	/*	#canvas{
+			margin-top:0em;
+		}
+		svg{
+			height: 600px;
+			width: 600px;
+		}
+		#card{
+			display: inline-flex;
+			background: #fff;
+			border-radius: 2px;
+			min-height: 700px;
+			position: relative;
+			margin-left: 650px;
+			margin-top: 250px;
+			width: 1200px;
+			box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		}
+		#form-bar{
+			margin: 2rem;
+			width: 700px;
+			height:inherit;
+		}
+		input[type="text"]{
+			width: 500px;
+			height:70px;
+			border-radius: 10px;
+			font-size:30px;
+			color:gray;
+			padding-left: 10px;
+		}
+		input[type="submit"],button{
+			width: 150px;
+			height: 80px;
+			border-radius: 20px;
+			display: block;
+			border: 2px solid #1ECD97;
+			background: none;
+			outline: none;
+			margin-top: 50px;
+		}
+		input[type="submit"]:hover,button:hover{
+			cursor: pointer;
+			background-color: #1ECD97;
+		}
+
+		.custom-select{
+			all:inherit;
+			position: relative;
+			width: 200px;
+			font-size: 30px;
+			border: 2px solid black;
+			border-radius: 10px;
+			padding-left: 10px;
+			cursor: pointer;
+
+		}
+		
+		#hide{
+			display: none;
+		}
+		rect,polygon{
+			display: none;
+		}*/
+		
+		
+		.top{
+			background-color: #1ECD97;
+			background-image: url("jumbo.webp");
+			background-position: right;
+			 -webkit-background-size: 10% 60%;
+			 -moz-background-size: 10% 40%;
+			 -o-background-size: 10% 40%;
+			  background-repeat: no-repeat;
+		}
+		
+		h1{
+			font-family: 'Alfa Slab One';
+		}
+		.hide{
+			display: none;
+		}
+		#mySidenav a {
+		  position: absolute;
+		  left: -80px;
+		  padding: 15px;
+		  width: 100px;
+		  text-decoration: none;
+		  font-size: 20px;
+		  color: white;
+		  border-radius: 0 5px 5px 0;
+		}
+		#eyes {
+		  top: 20px;
+		  background-color: #4CAF50;
+		}
+
+		#blog {
+		  top: 80px;
+		  background-color: #2196F3;
+		}
+
+		#projects {
+		  top: 140px;
+		  background-color: #f44336;
+		}
+
+		#contact {
+		  top: 200px;
+		  background-color: #555
+		}
+		h2{
+			font-family: 'Poppins';
+		}
+		.btn {
+		  background-color: white;
+		  border: none;
+		  color: black;
+		  padding: 25px 40px;
+		  font-size: 20px;
+		  cursor: pointer;
+		  margin: 2px;
+		}
+
+		/* Darker background on mouse-over */
+		.btn:hover {
+		  outline: none;
+		}
+		#eyeBallColor,#eyeFrameColor,#qrColor{
+			width: 100px;
+			height: 100px;
+		}
+		svg{
+			width:400px;
+			height: 400px;
+			position: absolute;
+			right: 10px;
+		}
+		#custom_section_eye,#custom_section_data,#custom_section_color,#custom_section_frame{
+			display: none;
+		}
+		.lower{
+			min-height:500px; 
+		}
+		img{
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			width: 200px;
+			height: 200px;
+			margin: 10px;
+		}
+		@media only screen and (max-width: 800px) {
+  			#mySidenav a {
+		  		position: initial;
+			}
+			.lower{
+				min-height:1900px; 
+			}
+		}
+	</style>
+
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="jumbotron top">
+			<h1>Qr code generator</h1>
+			<p>Build Static QR Codes</p>
+		</div>
+		<div class="container panel panel-success">
+			<div class="row jumbotron">
+				<form action="#" onsubmit="reqToServer();return false;">
+					<div class="col-md-10">
+						<input type="text" class="form-control input-lg" placeholder="Type Url" id="linkUrl" name="search" autocomplete="off">
+					</div>
+					<div class="col-md-1">
+						<input type="submit" class="hide">
+					</div>
+				</form>
+			</div>
+			<div class="row lower">
+				<div class="col-md-8">
+					<div id="mySidenav" class="sidenav">
+						<a href="#" onclick="showEyes();" id="eyes">Eyes</a>
+						<a href="#" onclick="showData();" id="blog">Data</a>
+						<a href="#" onclick="showColor();" id="projects">Color</a>
+						<a href="#" onclick="showFrame();" id="contact">Frame</a>
+					</div>
+					<div id="custom_section_eye" class="container">
+						<div class="row">
+							<div class="col-md-4">
+								<h2>Frame Shape</h2>
+								<button onclick="frameShape='square';reqToServer();" value="square" class="btn"><i class="fa fa-square"> Square</i></button>
+								<button onclick="frameShape='rounded';reqToServer();" class="btn"><i class="fa fa-square-o"> Rounded</i></button>
+								<button onclick="frameShape='circle';reqToServer();"  class="btn"><i class="fa fa-circle-o"> Cirle</i></button>
+								<button onclick="frameShape='left-leaf';reqToServer();" class="btn"><i class="fa fa-envira"> Left Leaf</i></button>
+								<button onclick="frameShape='right-leaf';reqToServer();" class="btn"><i class="fa fa-leaf"> Right Leaf</i></button>
+							</div>
+							<div class="col-md-4">
+								<h2>Eye Ball Shape</h2>
+								<button onclick="eyeBallShape='square';reqToServer();" value="square" class="btn"><i class="fa fa-square"> Square</i></button>
+								<button onclick="eyeBallShape='left-diamond';reqToServer();" class="btn"><i class="fa fa-diamond"> Diamond</i></button>
+								<button onclick="eyeBallShape='circle';reqToServer();"  class="btn"><i class="fa fa-circle-o"> Cirle</i></button>
+								<button onclick="eyeBallShape='left-leaf';reqToServer();" class="btn"><i class="fa fa-envira"> Left Leaf</i></button>
+								<button onclick="eyeBallShape='right-leaf';reqToServer();" class="btn"><i class="fa fa-leaf"> Right Leaf</i></button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<h2>Frame Color</h2>
+								<input onchange="updateFrameColor();" type="color" id="eyeFrameColor" name="eyeFrameColor" value="#000000">
+							</div>
+							<div class="col-md-4">
+								<h2>Eye Ball Color</h2>
+								<input onchange="updateEyeBallColor();" type="color" id="eyeBallColor" name="eyeBallColor" value="#000000">
+							</div> 
+						</div>
+					</div>
+					<div id="custom_section_data" class="container">
+						<h2>Select Data Pattern</h2>
+						<div class="col-md-8">
+							<div class="col-md-4">
+								<img onclick="dataPattern='square';reqToServer();" src="squareData.svg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="dataPattern='kite';reqToServer();" src="kitedata.svg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="dataPattern='circle';reqToServer();" src="circledata.svg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="dataPattern='left-diamond';reqToServer();" src="leftD.jpg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="dataPattern='right-diamond';reqToServer();" src="rightD.jpg">
+							</div>
+						</div>
+					</div>
+					<div id="custom_section_color" class="container">
+						<div class="row container">
+							<h2>QR Code Background Color</h2>
+							<input onchange="updateColor();" type="color" id="qrColor" name="qrcolor" value="#000000">
+						</div>
+						<div class="row container">
+							<h2>Background Image</h2>
+							<input type='file' id="imgInp" />
+							
+						</div>
+					</div>
+					<div id="custom_section_frame" class="container">
+						<div class="col-md-8">
+							<div class="col-md-4">
+								<img onclick="frame_style='balloon-bottom';reqToServer();" src="ballon_bottom.jpg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="frame_style='balloon-top';reqToServer();" src="ballon_top.jpg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="frame_style='banner-bottom';reqToServer();" src="banner_bottom.jpg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="frame_style='banner-top';reqToServer();" src="banner_top.jpg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="frame_style='box-bottom';reqToServer();" src="box_bottom.jpg">
+							</div>
+							<div class="col-md-4">
+								<img onclick="frame_style='box-top';reqToServer();" src="box_top.jpg">
+							</div>
+							<input type="text" onkeyup="updateFrameText();" class="form-control input-lg" placeholder="frame text" id="frametext" name="txt" autocomplete="off">
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div id="canvas">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--<div id="card" class="card">
+		<div id="form-bar">
+			<div>
+				
+					<div>
+						<form action="#" onsubmit="reqToServer();return false">
+						<input type="text" id="linkUrl" name="linkUrl" placeholder="type the url" autocomplete="off">
+						<input type="submit" id="hide">
+						</form>
+					</div>
+					<div>
+						<h2>Customize</h2>
+						<div class="container">
+							<select class="custom-select" id="custom-select" placeholder="Choose" onchange="customize();">
+								<option value="">choose</option>
+								<option value="eyes">Eyes</option>
+							</select>
+							<button>Eyes</button><button>Eyes</button><button>Eyes</button><button>Eyes</button>
+						</div>
+						<div id="custom_eyes" class="custom-area">
+							<div style="display: none;">
+								<div><h2>Frame Shape</h2><select class="custom-select" id="eyeFrameShape"> <option value="square">SQUARE</option> <option value="circle">CIRCLE</option> <option value="rounded">ROUNDED</option> <option value="left-leaf">LEFT_LEAF</option> <option value="right-leaf">RIGHT_LEAF</option> </select></div><div><h2>Eye Ball Shape</h2><select class="custom-select" id="eyeBallShape"> <option value="">Eye Ball Shape</option> <option value="square">SQUARE</option> <option value="circle">CIRCLE</option> <option value="rounded">ROUNDED</option> <option value="left-leaf">LEFT_LEAF</option> <option value="right-leaf">RIGHT_LEAF</option> <option value="left-diamond">LEFT_DIAMOND</option> <option value="right-diamond">RIGHT_DIAMOND</option> </select></div><div> <h2>Frame color</h2> <input type="color" id="eyeFrameColor" name="eyeFrameColor" value="#000000"> </div><div> <h2>Eye Ball color</h2> <input type="color" id="eyeBallColor" name="eyeBallColor" value="#000000"> </div>
+							</div>
+						</div>
+					</div>
+					
+				
+			</div>
+		</div>
+		<div id="canvas">
+		</div>
+	</div>-->
+	<!--<form method ="post" action="/">
+		<input type="url" id="linkUrl" name="linkUrl">
+		<input type="submit" value="submit">
+	</form>
+	<div id="canvas"></div>-->
+	<script type="text/javascript">
+		function readURL(input) {
+		  if (input.files && input.files[0]) {
+		    var reader = new FileReader();
+		    
+		    reader.onload = function(e) {
+		    	backgroundUrl = e.target.result;
+		    	reqToServer();
+		    //  console.log(e.target.result);
+		    }
+		    
+		    reader.readAsDataURL(input.files[0]); // convert to base64 string
+		  }
+		}
+
+		$("#imgInp").change(function() {
+		  readURL(this);
+		});
+		function showEyes(){
+			document.getElementById("custom_section_eye").style.display="block";
+			document.getElementById("custom_section_data").style.display="none";
+			document.getElementById("custom_section_color").style.display="none";
+			document.getElementById("custom_section_frame").style.display="none";	
+		}
+		function showData(){
+			document.getElementById("custom_section_eye").style.display="none";
+			document.getElementById("custom_section_data").style.display="block";
+			document.getElementById("custom_section_color").style.display="none";	
+			document.getElementById("custom_section_frame").style.display="none";
+		}
+		function showColor(){
+			document.getElementById("custom_section_eye").style.display="none";
+			document.getElementById("custom_section_data").style.display="none";	
+			document.getElementById("custom_section_color").style.display="block";
+			document.getElementById("custom_section_frame").style.display="none";
+		}
+		function showFrame(){
+			document.getElementById("custom_section_frame").style.display="block";
+			document.getElementById("custom_section_eye").style.display="none";
+			document.getElementById("custom_section_data").style.display="none";
+			document.getElementById("custom_section_color").style.display="none";
+		}
+		var frameShape = 'square';//document.getElementById("eyeFrameShape").value;
+		var eyeBallShape = 'square';;//document.getElementById("eyeBallShape").value;
+		var eyeFrameColor = 'black'; //document.getElementById("eyeFrameColor").value;
+		var eyeBallColor = 'black';//document.getElementById("eyeBallColor").value;
+		var dataPattern = 'square';
+		var qrCodeColor = '#000000';
+		var logoUrl = '';
+		var backgroundUrl='';
+		var frame_style = 'none';
+		var frameText ='';
+		var obj = $.parseHTML("<%= (name)%>");
+		
+		if(obj && obj[0]){
+			$("#canvas").append(obj[0]['wholeText']);
+		}
+		function isValid(userInput) {
+    		var res = userInput.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    		if(res == null)
+        		return false;
+    		else
+        		return true;
+		}
+		function reqToServer(){
+			var url = document.getElementById("linkUrl").value;
+			//console.log(document.getElementById("eyeFrameShape").value);
+			console.log(url,frameShape);
+			if(isValid(url)){
+				var form = {
+					"linkUrl":url,
+					"eyeFrameShape":frameShape,
+					"eyeBallShape":eyeBallShape,
+					"eyeFrameColor":eyeFrameColor,
+					"eyeBallColor":eyeBallColor,
+					"dataPattern":dataPattern,
+					"colorDark":qrCodeColor,
+					"backgroundImage":backgroundUrl,
+					"frameStyle":frame_style,
+					"frameText":frameText
+				};
+				//form.append("linkedUrl", url);
+				$.post("/build",form,function(response){
+					$("#canvas").empty();
+					$("#canvas").append(response);
+				});
+			}else{
+				return;
+			}
+		}
+		/*$(":input[type='submit']").click(function(){
+			reqToServer();
+		});*/
+		function updateFrameText(){
+			let tmp = document.getElementById("frametext").value;
+			if(tmp.length<=10){
+				frameText = tmp;
+				reqToServer();
+			}
+		}
+		function updateFrameShape(){
+			frameShape = document.getElementById("eyeFrameShape").value;
+			reqToServer();
+		}
+		function updateEyeShape(){
+			eyeBallShape = document.getElementById("eyeBallShape").value;
+			reqToServer();
+		}
+		function updateColor(){
+			qrCodeColor = document.getElementById("qrColor").value;
+			reqToServer();
+		}
+		function updateFrameColor(){
+			eyeFrameColor =  document.getElementById("eyeFrameColor").value;
+			reqToServer();
+		}
+		function updateEyeBallColor(){
+			eyeBallColor = document.getElementById("eyeBallColor").value;
+			reqToServer();
+		}
+		function customize(){
+			var id = document.getElementById("custom-select").value;
+			$(".custom-area").empty();
+			$("#custom_"+id).append('<div><h2>Frame Shape</h2><select onchange="updateFrameShape();" class="custom-select" id="eyeFrameShape"> <option value="square">SQUARE</option> <option value="circle">CIRCLE</option> <option value="rounded">ROUNDED</option> <option value="left-leaf">LEFT_LEAF</option> <option value="right-leaf">RIGHT_LEAF</option> </select></div><div><h2>Eye Ball Shape</h2><select onchange="updateEyeShape();" class="custom-select" id="eyeBallShape"><option value="square">SQUARE</option> <option value="circle">CIRCLE</option> <option value="rounded">ROUNDED</option> <option value="left-leaf">LEFT_LEAF</option> <option value="right-leaf">RIGHT_LEAF</option> <option value="left-diamond">LEFT_DIAMOND</option> <option value="right-diamond">RIGHT_DIAMOND</option> </select></div><div> <h2>Frame color</h2> <input onchange="updateFrameColor();" type="color" id="eyeFrameColor" name="eyeFrameColor" value="#000000"> </div><div> <h2>Eye Ball color</h2> <input onchange="updateEyeBallColor();" type="color" id="eyeBallColor" name="eyeBallColor" value="#000000"> </div>');;
+		}
+
+	</script>
+</body>
+</html>
