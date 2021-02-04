@@ -118,6 +118,18 @@
 			visibility: hidden;
 
 		}
+		#bulk_upload{
+			display: none;
+		}
+		.file_upload{
+			width: 100%;
+			border: 1px dashed black;
+			min-height: 100px;
+			display: inline-block;
+			cursor: pointer;
+			text-align: center;
+			padding-top: 5%;
+		}
 		@media only screen and (max-width: 800px) {
   			#mySidenav a {
 		  		position: initial;
@@ -125,10 +137,14 @@
 			.lower{
 				min-height:1900px; 
 			}
+			img{
+				margin-left: 20%;
+			}
+			
 		}
 		
 	</style>
-
+ 
 </head>
 <body>
 	<div class="container-fluid">
@@ -136,9 +152,25 @@
 			<h1>Qr code generator</h1>
 			<p>Build Static QR Codes</p>
 		</div>
+		
+
 		<div class="container panel panel-success">
 			<div class="row jumbotron">
-				<form action="#" onsubmit="build();return false;">
+				<h2>Uplaod Csv</h2>
+				
+					<div class="col-md-10">
+						<div onclick="document.getElementById('bulk_upload').click();" class="file_upload">
+					    	<i class="fa fa-cloud-upload"></i> Custom Upload
+						</div>
+						<input type="file" id="bulk_upload" name="file">
+					</div>
+					<div class="col-md-1">
+						<input type="submit" onclick="bulkUpload();">
+					</div>
+				
+			</div>
+			<div class="hide row jumbotron">
+				<form action="#" onsubmit="reqToServer();return false;">
 					<div class="col-md-10">
 						<input type="text" class="form-control input-lg" placeholder="Type Url" id="linkUrl" name="search" autocomplete="off">
 					</div>
@@ -158,7 +190,7 @@
 					<div id="custom_section_eye" class="container">
 						<div class="row">
 							<div class="col-md-4">
-								<h2>Eye Frame Shape</h2>
+								<h2>Frame Shape</h2>
 								<button onclick="frameShape='square';reqToServer();" value="square" class="btn"><i class="fa fa-square"> Square</i></button>
 								<button onclick="frameShape='rounded';reqToServer();" class="btn"><i class="fa fa-square-o"> Rounded</i></button>
 								<button onclick="frameShape='circle';reqToServer();"  class="btn"><i class="fa fa-circle-o"> Cirle</i></button>
@@ -242,12 +274,10 @@
 				</div>
 				<div class="col-md-4">
 					<div class="row">
-						<div id="canvas">
-							
-						</div>
+						<div id="canvas"></div>
 					</div>
 					<div id="btn" class="row">
-						<input type="submit" value="Download as png" id="download" onclick="DownloadAsImage();">'
+						<input type="submit" value="Download" id="download" onclick="DownloadAsImage();">'
 					</div>
 				</div>
 			</div>
@@ -255,19 +285,40 @@
 	</div>
 	<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 	<script type="text/javascript">
-
+		var opt;
+		function bulkUpload(){
+			url = "abc.com";
+			bulk = true;
+			var input =document.getElementById('bulk_upload');
+			if (input.files && input.files[0]) {
+			 	var reader = new FileReader();
+				console.log('working');
+				reader.onload = function(e) {
+					var form = {
+						'file':e.target.result
+					};
+					$.post("/bulkUpload",form,function(response){
+						opt = JSON.parse(response);
+						console.log(opt);
+						reqToServer();
+					});
+				}
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
 
 		function readURL(input) {
+			console.log('working');
 		  if (input.files && input.files[0]) {
 		    var reader = new FileReader();
-		    
+		    console.log('working');
 		    reader.onload = function(e) {
 		    	backgroundUrl = e.target.result;
 		    	reqToServer();
-		    //  console.log(e.target.result);
+		     //console.log(e.target.result);
 		    }
 		    
-		    reader.readAsDataURL(input.files[0]); 
+		    reader.readAsDataURL(input.files[0]); // convert to base64 string
 		  }
 		}
 
@@ -298,6 +349,7 @@
 			document.getElementById("custom_section_color").style.display="none";
 			document.getElementById("custom_section_frame").style.display="block";
 		}
+		var id ="";
 		var frameShape = 'square';//document.getElementById("eyeFrameShape").value;
 		var eyeBallShape = 'square';;//document.getElementById("eyeBallShape").value;
 		var eyeFrameColor = 'black'; //document.getElementById("eyeFrameColor").value;
@@ -309,7 +361,7 @@
 		var frame_style = 'none';
 		var frameText ='';
 		var obj = $.parseHTML("<%= (name)%>");
-		var id;
+		var bulk = false;
 		if(obj && obj[0]){
 			$("#canvas").append(obj[0]['wholeText']);
 		}
@@ -320,9 +372,11 @@
     		else
         		return true;
 		}
-		function build(){
-			var url = document.getElementById("linkUrl").value;
+		function reqToServer(){
+			var tmp = document.getElementById("linkUrl").value;
 			//console.log(document.getElementById("eyeFrameShape").value);
+			if(tmp!='')
+				url = tmp;
 			console.log(url,frameShape);
 			if(isValid(url)){
 				var form = {
@@ -339,56 +393,10 @@
 				};
 				//form.append("linkedUrl", url);
 				$.post("/build",form,function(response){
-					id  =response.id;
-					retrieveImg();
-					/*$("#canvas").empty();
+					$("#canvas").empty();
 					$("#canvas").append(response);
 					console.log("hedcd");
-						document.getElementById("btn").style.visibility="visible";*/
-				});
-			}else{
-				return;
-			}
-		}
-		function retrieveImg(){
-			if(!id)return;
-			var form = {
-				"id":id
-			};
-			$.post("/getImgUrl",form,function(response){
-				console.log('retrieving imgage')
-				$("#canvas").empty();
-				response = JSON.parse(response);
-				console.log(response);
-				$("#canvas").append('<img src="'+response.urls.png+'?'+new Date().getTime()+'">');
-			});
-		}
-		function reqToServer(){
-			var url = document.getElementById("linkUrl").value;
-			//console.log(document.getElementById("eyeFrameShape").value);
-			console.log(url,frameShape);
-			if(isValid(url) && id){
-				var form = {
-					"id":id,
-					"linkUrl":url,
-					"eyeFrameShape":frameShape,
-					"eyeBallShape":eyeBallShape,
-					"eyeFrameColor":eyeFrameColor,
-					"eyeBallColor":eyeBallColor,
-					"dataPattern":dataPattern,
-					"colorDark":qrCodeColor,
-					"backgroundImage":backgroundUrl,
-					"frameStyle":frame_style,
-					"frameText":frameText
-				};
-				//form.append("linkedUrl", url);
-				$.post("/update",form,function(response){
-					
-					retrieveImg();
-					/*$("#canvas").empty();
-					$("#canvas").append(response);
-					console.log("hedcd");
-						document.getElementById("btn").style.visibility="visible";*/
+						document.getElementById("btn").style.visibility="visible";
 				});
 			}else{
 				return;
@@ -437,30 +445,42 @@
 			link.click();
 			clearDynamicLink(link); 
 		}
-
+		function DownloadZip(){
+			var form = {
+				"id":opt.id,
+				"eyeFrameShape":frameShape,
+				"eyeBallShape":eyeBallShape,
+				"eyeFrameColor":eyeFrameColor,
+				"eyeBallColor":eyeBallColor,
+				"dataPattern":dataPattern,
+				"colorDark":qrCodeColor,
+				"backgroundImage":backgroundUrl,
+				"frameStyle":frame_style,
+				"frameText":frameText
+			};
+			$.post("/downloadZip",form,function(response){
+				//console.log(typeof(response));
+				
+				var link = document.createElement("a");
+				link.download = 'qrcodes.zip';
+				link.href = response.storage_url;
+				document.body.appendChild(link);
+				link.click();
+				clearDynamicLink(link); 
+			});
+		}
 		function DownloadAsImage() {
+			if(bulk==true){
+				DownloadZip();
+				return;
+			}
 			var element = $("#canvas")[0];
 			html2canvas(element).then(function (canvas) {
 				var myImage = canvas.toDataURL();
 				downloadURI(myImage, "QR_Code.png");
 		    });
 		}
-		/*var settings = {
-  "async": true,
-  "crossDomain": true,
-  "url": "https://api.beaconstac.com/api/2.0/qrcodes/",
-  "method": "POST",
-  "headers": {
-    "Authorization": "Token ",
-    "Content-Type": "application/json"
-  },
-  "processData": false,
-  "data": "{\n    \"name\": \"Static Website QR Code\",\n    \"organization\": 26724,\n    \"qr_type\": 1,\n    \"fields_data\": {\n        \"qr_type\": 1,\n        \"url\": \"https://www.abc.com\"\n    },\n    \"attributes\":{\n        \"color\":\"#2595ff\",\n        \"colorDark\":\"#2595ff\",\n        \"margin\":80,\n        \"isVCard\":false,\n        \"frameText\":\"j\",\n        \"logoImage\":\"https://d1bqobzsowu5wu.cloudfront.net/15406/36caec11f02d460aad0604fa26799c50\",\n        \"logoScale\":0.1992,\n        \"frameColor\":\"#2595FF\",\n        \"frameStyle\":\"banner-bottom\",\n        \"logoMargin\":10,\n        \"dataPattern\":\"square\",\n        \"eyeBallShape\":\"circle\",\n        \"gradientType\":\"none\",\n        \"eyeFrameColor\":\"#2595FF\",\n        \"eyeFrameShape\":\"rounded\"\n    }\n}"
-}
 
-$.ajax(settings).done(function (response) {
-  console.log(response);
-});*/
 	</script>
 </body>
 </html>

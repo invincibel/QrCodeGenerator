@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 var stringify = require('json-stringify-safe');
 const CircularJSON = require('circular-json');
 app.use(bodyParser.json({ limit: "50mb" }));
-var request = require("request");
+
 app.use(
   bodyParser.urlencoded({
     limit: "100mb",
@@ -15,8 +15,6 @@ app.use(
 );
 var cors = require("cors");
 app.use(cors());
-app.use(cors({credentials: true, origin: 'http://localhost:8000'}));
-
 const QRCodeBuilder = require("mobstac-awesome-qr");
 app.use(express.static(__dirname + '/views'));
 app.use(express.static(__dirname));
@@ -24,33 +22,67 @@ app.use(express.static(__dirname));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 const fs = require("fs");
-app.post("/build",(req,res)=>{
+const mime = require("mime");
+var request = require("request");
+var jsonParser = bodyParser.json()
+app.post("/bulkUpload",jsonParser,(req,res)=>{
+	
+	var data = req.body.file;
 
-
-
-
-
-
-
-
-var options = { method: 'POST',
-  url: 'https://api.beaconstac.com/api/2.0/qrcodes/',
-  headers: 
-   { 
-     'Content-Type': 'application/json',
-     Authorization: 'Token {{token}}' },
-  body: 
-   { name: 'Static Website QR Code',
-     organization: 26724,
-     qr_type: 1,
-     fields_data: { qr_type: 1, url: req.body.linkUrl },
-     attributes: 
-      { color: '#2595ff',
+	var matches = data.match(
+        /^data:([A-Za-z-+\/]+);base64,(.+)$/
+      ),
+    response = {};
+    response.type = matches[1];
+    response.data =  Buffer.from(matches[2], "base64");
+    let csv = response;
+    let csvbuf = csv.data;
+    let type = csv.type;
+    let ext = mime.extension(type);
+    let id = new Date().getTime();
+    let fileName = id + "." + ext;  
+	fs.writeFileSync(fileName, csvbuf, "utf8");
+	var options = {
+	  'method': 'POST',
+	  'url': 'https://api.beaconstac.com/api/2.0/bulkqrcodes/',
+	  'headers': {
+	    'Authorization': 'Token {{token}}'
+	  },
+	  formData: {
+	    'organization': '26724',
+	    'name': 'Sample Bulk QR Code collection',
+	    'file': {
+	      'value': fs.createReadStream("/home/invincible/myProject/"+fileName),
+	      'options': {
+	        'filename': fileName,
+	        'contentType': null
+	      }
+	    },
+	    'qr_type': '1',
+	    'qr_data_type': '1',
+	    'error_correction_level': '1',
+	    'size': '1024'
+	  }
+	};
+	request(options, function (error, response) {
+		if (error) throw new Error(error);
+	  		res.send(response.body);
+	});
+	fs.unlinkSync(fileName);
+});
+app.post("/downloadZip",(req,res)=>{
+	var options = { method: 'PUT',
+	  url: 'https://api.beaconstac.com/api/2.0/bulkqrcodes/'+req.body.id+'/',
+	  headers: 
+	   {'Content-Type': 'application/json',
+	     Authorization: 'Token {{token}}' },
+	  body: 
+	   { id: req.body.id,
+	     attributes:{ color: '#2595ff',
         colorDark: req.body.colorDark,
         margin: 80,
         isVCard: false,
         frameText: req.body.frameText,
-        logoImage: 'https://d1bqobzsowu5wu.cloudfront.net/15406/36caec11f02d460aad0604fa26799c50',
         logoScale: 0.1992,
         frameColor: '#2595FF',
         frameStyle: req.body.frameStyle,
@@ -62,20 +94,15 @@ var options = { method: 'POST',
         gradientType: 'none',
         eyeFrameColor: req.body.eyeFrameColor,
         eyeFrameShape: req.body.eyeFrameShape } },
-  json: true };
-
-request(options, function (error, response, body) {
-  if (error) throw new Error(error);
-
- res.send(body);
+	  json: true };
+	    request(options, function (error, response, body) {
+			if (error) throw new Error(error);
+		    res.send(body);
+		});
 });
-
-
-
-
-
+app.post("/build",(req,res)=>{
 	
-	/*const qrCodeGenerator = new QRCodeBuilder.QRCodeBuilder({
+	const qrCodeGenerator = new QRCodeBuilder.QRCodeBuilder({
 			text: req.body.linkUrl,
 			canvasType: 'png',
 			backgroundImage:req.body.backgroundImage,
@@ -99,92 +126,16 @@ request(options, function (error, response, body) {
 		str = str.replace(/\n|\r/g, "");
 		//res.render('main',{name:str});
 		res.send(str);
-	});*/
-	
-});
-app.post("/getImgUrl",(req,res)=>{
-	var id  = req.body.id;
-
-	var options = { method: 'GET',
-	  url: 'https://api.beaconstac.com/api/2.0/qrcodes/'+id+'/download/',
-	  qs: { size: '2048', error_correction_level: '5', canvas_type: 'png' },
-	  headers: 
-	   { 
-	     Authorization: 'Token {{token}}' } };
-
-	request(options, function (error, response, body) {
-	  if (error) throw new Error(error);
-
-	  res.send(body);
 	});
 });
-app.post("/update",(req,res)=>{
-	var id  = req.body.id;
-	var options = { method: 'PUT',
-  	url: 'https://api.beaconstac.com/api/2.0/qrcodes/'+id+'/',
-	headers: 
-	{ 
-	    'Content-Type': 'application/json',
-	    Authorization: 'Token {{token}}' },
-	body: 
-	 {name: 'Static Website QR Code',
-     organization: 26724,
-     qr_type: 1,
-     fields_data: { qr_type: 1, url: req.body.linkUrl },
-     attributes: 
-      { color: '#2595ff',
-        colorDark: req.body.colorDark,
-        margin: 80,
-        isVCard: false,
-        frameText: req.body.frameText,
-        logoImage: 'https://d1bqobzsowu5wu.cloudfront.net/15406/36caec11f02d460aad0604fa26799c50',
-        logoScale: 0.1992,
-        frameColor: '#2595FF',
-        frameStyle: req.body.frameStyle,
-        backgroundImage:req.body.backgroundImage,
-        logoMargin: 10,
-        dataPattern: req.body.dataPattern,
-        eyeBallShape: req.body.eyeBallShape,
-        eyeBallColor: req.body.eyeBallColor,
-        gradientType: 'none',
-        eyeFrameColor: req.body.eyeFrameColor,
-        eyeFrameShape: req.body.eyeFrameShape } },
-  		json: true
-	};
 
-	request(options, function (error, response, body) {
-	  if (error) throw new Error(error);
-
-	  res.send("{status:success}")
-	});
-});
 app.post("/", (req, res) => {
-	var eyeFrameShape = 'square';
-	var eyeBallShape = 'square';
-	var backColor = 'black';
-	const qrCodeGenerator = new QRCodeBuilder.QRCodeBuilder({
-			text: req.body.linkUrl,
-			canvasType: 'png',
-			eyeFrameShape: 'square',
-			eyeBallShape: 'square',
-			dataPattern: 'square',
-			dotScale: 0.96,
-			frameStyle: 'balloon-top',
-			frameColor: '#0b1257',
-			frameText: '',
-			logoMargin: 5,
-			isVCard: false,
-		});
-	qrCodeGenerator.build('svg').then(qrCode=>{
-		//var str = qrCode.toBuffer();
-		//str = str.replace(/(\r\n|\n|\r)/gm, "");
-		var str = qrCode.toBuffer();
-		str = str.replace(/\n|\r/g, "");
-		res.render('main',{name:str});
-		//res.send(qrCode.toBuffer());
-	});
+	console.log(req.body);
+	res.send(req.body);
 });
+
 app.get("/",(req,res)=>{
+
 	res.render('main',{name:undefined});
 });
 /*app.get('*', function(req, res){
