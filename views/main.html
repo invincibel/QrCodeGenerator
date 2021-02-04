@@ -138,7 +138,7 @@
 		</div>
 		<div class="container panel panel-success">
 			<div class="row jumbotron">
-				<form action="#" onsubmit="reqToServer();return false;">
+				<form action="#" onsubmit="build();return false;">
 					<div class="col-md-10">
 						<input type="text" class="form-control input-lg" placeholder="Type Url" id="linkUrl" name="search" autocomplete="off">
 					</div>
@@ -158,7 +158,7 @@
 					<div id="custom_section_eye" class="container">
 						<div class="row">
 							<div class="col-md-4">
-								<h2>Frame Shape</h2>
+								<h2>Eye Frame Shape</h2>
 								<button onclick="frameShape='square';reqToServer();" value="square" class="btn"><i class="fa fa-square"> Square</i></button>
 								<button onclick="frameShape='rounded';reqToServer();" class="btn"><i class="fa fa-square-o"> Rounded</i></button>
 								<button onclick="frameShape='circle';reqToServer();"  class="btn"><i class="fa fa-circle-o"> Cirle</i></button>
@@ -242,7 +242,9 @@
 				</div>
 				<div class="col-md-4">
 					<div class="row">
-						<div id="canvas"></div>
+						<div id="canvas">
+							
+						</div>
 					</div>
 					<div id="btn" class="row">
 						<input type="submit" value="Download as png" id="download" onclick="DownloadAsImage();">'
@@ -265,7 +267,7 @@
 		    //  console.log(e.target.result);
 		    }
 		    
-		    reader.readAsDataURL(input.files[0]); // convert to base64 string
+		    reader.readAsDataURL(input.files[0]); 
 		  }
 		}
 
@@ -307,7 +309,7 @@
 		var frame_style = 'none';
 		var frameText ='';
 		var obj = $.parseHTML("<%= (name)%>");
-		
+		var id;
 		if(obj && obj[0]){
 			$("#canvas").append(obj[0]['wholeText']);
 		}
@@ -318,7 +320,7 @@
     		else
         		return true;
 		}
-		function reqToServer(){
+		function build(){
 			var url = document.getElementById("linkUrl").value;
 			//console.log(document.getElementById("eyeFrameShape").value);
 			console.log(url,frameShape);
@@ -337,10 +339,56 @@
 				};
 				//form.append("linkedUrl", url);
 				$.post("/build",form,function(response){
-					$("#canvas").empty();
+					id  =response.id;
+					retrieveImg();
+					/*$("#canvas").empty();
 					$("#canvas").append(response);
 					console.log("hedcd");
-						document.getElementById("btn").style.visibility="visible";
+						document.getElementById("btn").style.visibility="visible";*/
+				});
+			}else{
+				return;
+			}
+		}
+		function retrieveImg(){
+			if(!id)return;
+			var form = {
+				"id":id
+			};
+			$.post("/getImgUrl",form,function(response){
+				console.log('retrieving imgage')
+				$("#canvas").empty();
+				response = JSON.parse(response);
+				console.log(response);
+				$("#canvas").append('<img src="'+response.urls.png+'?'+new Date().getTime()+'">');
+			});
+		}
+		function reqToServer(){
+			var url = document.getElementById("linkUrl").value;
+			//console.log(document.getElementById("eyeFrameShape").value);
+			console.log(url,frameShape);
+			if(isValid(url) && id){
+				var form = {
+					"id":id,
+					"linkUrl":url,
+					"eyeFrameShape":frameShape,
+					"eyeBallShape":eyeBallShape,
+					"eyeFrameColor":eyeFrameColor,
+					"eyeBallColor":eyeBallColor,
+					"dataPattern":dataPattern,
+					"colorDark":qrCodeColor,
+					"backgroundImage":backgroundUrl,
+					"frameStyle":frame_style,
+					"frameText":frameText
+				};
+				//form.append("linkedUrl", url);
+				$.post("/update",form,function(response){
+					
+					retrieveImg();
+					/*$("#canvas").empty();
+					$("#canvas").append(response);
+					console.log("hedcd");
+						document.getElementById("btn").style.visibility="visible";*/
 				});
 			}else{
 				return;
@@ -397,6 +445,22 @@
 				downloadURI(myImage, "QR_Code.png");
 		    });
 		}
+		/*var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://api.beaconstac.com/api/2.0/qrcodes/",
+  "method": "POST",
+  "headers": {
+    "Authorization": "Token ",
+    "Content-Type": "application/json"
+  },
+  "processData": false,
+  "data": "{\n    \"name\": \"Static Website QR Code\",\n    \"organization\": 26724,\n    \"qr_type\": 1,\n    \"fields_data\": {\n        \"qr_type\": 1,\n        \"url\": \"https://www.abc.com\"\n    },\n    \"attributes\":{\n        \"color\":\"#2595ff\",\n        \"colorDark\":\"#2595ff\",\n        \"margin\":80,\n        \"isVCard\":false,\n        \"frameText\":\"j\",\n        \"logoImage\":\"https://d1bqobzsowu5wu.cloudfront.net/15406/36caec11f02d460aad0604fa26799c50\",\n        \"logoScale\":0.1992,\n        \"frameColor\":\"#2595FF\",\n        \"frameStyle\":\"banner-bottom\",\n        \"logoMargin\":10,\n        \"dataPattern\":\"square\",\n        \"eyeBallShape\":\"circle\",\n        \"gradientType\":\"none\",\n        \"eyeFrameColor\":\"#2595FF\",\n        \"eyeFrameShape\":\"rounded\"\n    }\n}"
+}
+
+$.ajax(settings).done(function (response) {
+  console.log(response);
+});*/
 	</script>
 </body>
 </html>
