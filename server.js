@@ -46,7 +46,7 @@ app.post("/bulkUpload",jsonParser,(req,res)=>{
 	  'method': 'POST',
 	  'url': 'https://api.beaconstac.com/api/2.0/bulkqrcodes/',
 	  'headers': {
-	    'Authorization': 'Token {{token}}'
+	    'Authorization': 'Token '+process.env.token
 	  },
 	  formData: {
 	    'organization': '26724',
@@ -75,7 +75,8 @@ app.post("/downloadZip",(req,res)=>{
 	  url: 'https://api.beaconstac.com/api/2.0/bulkqrcodes/'+req.body.id+'/',
 	  headers: 
 	   {'Content-Type': 'application/json',
-	     Authorization: 'Token {{token}}' },
+	     Authorization: 'Token '+process.env.token
+	      },
 	  body: 
 	   { id: req.body.id,
 	     attributes:{ color: '#2595ff',
@@ -142,4 +143,4 @@ app.get("/",(req,res)=>{
 	return res.redirect("/");
 });*/
 
-app.listen(8000, () => console.log("Listening on port 8000!"));
+app.listen(8080, () => console.log("Listening on port 8080!"));
