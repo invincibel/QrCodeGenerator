@@ -1,0 +1,188 @@
+.top{
+			background-color: #1ECD97;
+			background-image: url("jumbo.webp");
+			background-position: right;
+			 -webkit-background-size: 10% 60%;
+			 -moz-background-size: 10% 40%;
+			 -o-background-size: 10% 40%;
+			  background-repeat: no-repeat;
+		}
+		
+		h1{
+			font-family: 'Alfa Slab One';
+		}
+		.hide{
+			
+		}
+		#mySidenav a {
+		  position: absolute;
+		  left: -80px;
+		  padding: 15px;
+		  width: 100px;
+		  text-decoration: none;
+		  font-size: 20px;
+		  color: white;
+		  border-radius: 0 5px 5px 0;
+		}
+		#eyes {
+		  top: 20px;
+		  background-color: #4CAF50;
+		}
+
+		#blog {
+		  top: 80px;
+		  background-color: #2196F3;
+		}
+
+		#projects {
+		  top: 140px;
+		  background-color: #f44336;
+		}
+
+		#contact {
+		  top: 200px;
+		  background-color: #555
+		}
+		h2{
+			font-family: 'Poppins';
+		}
+		.btn {
+		  background-color: white;
+		  border: none;
+		  color: black;
+		  padding: 25px 40px;
+		  font-size: 20px;
+		  cursor: pointer;
+		  margin: 2px;
+		}
+
+		/* Darker background on mouse-over */
+		.btn:hover {
+		  outline: none;
+		}
+		#eyeBallColor,#eyeFrameColor,#qrColor{
+			width: 100px;
+			height: 100px;
+		}
+		svg{
+			width:400px;
+			height: 400px;
+		}
+		#canvas,#loader{
+			position: absolute;
+			right: 10px;
+		}
+		#custom_section_eye,#custom_section_data,#custom_section_color,#custom_section_frame{
+			display: none;
+		}
+		.lower{
+			min-height:500px; 
+		}
+		img{
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			width: 200px;
+			height: 200px;
+			margin: 10px;
+		}
+		#download{
+			height: 40px;
+			border-radius: 20px;
+			display: block;
+			border: 2px solid #1ECD97;
+			background: none;
+			outline: none;
+			width: 100%;
+		}
+		#download:hover{
+			cursor: pointer;
+			background-color: #1ECD97;
+		}
+		#btn{
+			position: absolute;
+			bottom: -500px;
+			width: 100%;
+			visibility: hidden;
+
+		}
+		#bulk_upload{
+			display: none;
+		}
+		.file_upload{
+			width: 100%;
+			border: 1px dashed black;
+			min-height: 100px;
+			display: inline-block;
+			cursor: pointer;
+			text-align: center;
+			padding-top: 5%;
+		}
+		#dropup-mennu{
+			position: fixed;
+			right: 0px;
+			bottom: 0px;
+			z-index: 1000;
+		}
+
+		.dropbtn {
+		  background-color: #3498DB;
+		  color: white;
+		  padding: 16px;
+		  font-size: 16px;
+		  border: none;
+		}
+
+		.dropup {
+		  position: relative;
+		  display: inline-block;
+		}
+
+		.dropup-content {
+		  display: none;
+		  position: absolute;
+		  background-color: #f1f1f1;
+		  min-width: 160px;
+		  bottom: 50px;
+		  z-index: 1;
+		}
+
+		.dropup-content a {
+		  color: black;
+		  padding: 12px 16px;
+		  text-decoration: none;
+		  display: block;
+		}
+
+		.dropup-content a:hover {background-color: #ccc}
+
+		.dropup:hover .dropup-content {
+		  display: block;
+		}
+
+		.dropup:hover .dropbtn {
+		  background-color: #2980B9;
+		}
+		@media only screen and (max-width: 800px) {
+  			#mySidenav a {
+		  		position: initial;
+			}
+			.lower{
+				min-height:1900px; 
+			}
+			img{
+				margin-left: 20%;
+			}
+			
+		}
+		.emp{
+			display: none;
+		}
+		.options{
+			border-radius: 50%;
+			border: none;
+			padding: 20px;
+			margin:4px 2px;
+			outline: none;
+		}
+		.options:focus {
+   			border: 0;
+		}
